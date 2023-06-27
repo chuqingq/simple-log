@@ -13,4 +13,26 @@ A simple log module in Go.
 
 ## TODO
 
-- [ ] use type alias to replace logrus.Logger
+- [ ] use type alias to replace logrus.Loggerpackage log // import "github.com/chuqingq/simple-log"
+
+
+## go doc
+
+```
+FUNCTIONS
+
+func AppendOutput(logger *logrus.Logger, output io.Writer)
+    AppendOutput 添加日志输出
+
+func New() *logrus.Logger
+func NewWithOptions(options *Options) *logrus.Logger
+
+TYPES
+
+type Options struct {
+	FileName    string // 日志文件名，不包含路径
+	MaxSizeInMB int    // 日志文件大小，单位MB，>=1
+	MaxBackups  int    // 日志文件最大备份数，>=1
+	Formatter   logrus.Formatter
+}
+```
