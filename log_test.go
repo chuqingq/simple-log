@@ -13,8 +13,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func clean() {
+	os.Remove("test.log")
+	os.Remove("/dev/shm/test.log")
+}
+
 func TestLogLevel(t *testing.T) {
-	logger := New()
+	defer clean()
+
+	logger := New("test.log")
 	go func() {
 		time.Sleep(time.Second * 5)
 		logger.SetLevel(logrus.ErrorLevel)
@@ -35,7 +42,8 @@ func getCurrentPath() string {
 }
 
 func TestAppendOutput(t *testing.T) {
-	logger := New()
+	defer clean()
+	logger := New("test.log")
 
 	// 打开文件，如果不存在则创建
 	filename := filepath.Join(getCurrentPath(), "test.log")
