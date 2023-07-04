@@ -12,9 +12,10 @@ import (
 
 type Options struct {
 	// FileName    string // 日志文件名，不包含路径
-	MaxSizeInMB int // 日志文件大小，单位MB，>=1
-	MaxBackups  int // 日志文件最大备份数，>=1
-	Formatter   logrus.Formatter
+	MaxSizeInMB   int // 日志文件大小，单位MB，>=1
+	MaxBackups    int // 日志文件最大备份数，>=1
+	Formatter     logrus.Formatter
+	DisableStderr bool // 设置后不再打印到标准错误
 }
 
 func New(filename string, option ...*Options) *logrus.Logger {
@@ -66,6 +67,11 @@ func New(filename string, option ...*Options) *logrus.Logger {
 		Level:     logrus.DebugLevel,
 	}
 	logger.SetReportCaller(true)
+
+	// 设置后不再打印到标准错误
+	if !options.DisableStderr {
+		AppendOutput(logger, os.Stderr)
+	}
 
 	// 在当前目录创建链接
 	if runtime.GOOS == "linux" {
