@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"time"
 
 	log "github.com/chuqingq/simple-log"
@@ -10,18 +11,21 @@ import (
 
 func clean() {
 	os.Remove("test.log")
-	os.Remove("/dev/shm/test.log")
+	exec.Command("sh", "-c", "rm /dev/shm/test*.log").Run()
 }
 
 func main() {
 	defer clean()
 
 	logger := log.New("test.log")
+	log.AppendOutput(logger, os.Stderr)
+
 	go func() {
 		time.Sleep(time.Second * 5)
 		logger.SetLevel(logrus.ErrorLevel)
 	}()
-	for {
+
+	for i := 0; i < 8; i++ {
 		logger.Debugf("this is debug log")
 		logger.Infof("this is info log")
 		logger.Warnf("this is warn log")
