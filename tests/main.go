@@ -18,7 +18,7 @@ func main() {
 	defer clean()
 
 	logger := log.New("test.log")
-	log.AppendOutput(logger, os.Stderr)
+	// log.AppendOutput(logger, os.Stderr)
 
 	go func() {
 		time.Sleep(time.Second * 5)
