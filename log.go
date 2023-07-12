@@ -16,6 +16,7 @@ type Options struct {
 	MaxBackups    int // 日志文件最大备份数，>=1
 	Formatter     logrus.Formatter
 	DisableStderr bool // 设置后不再打印到标准错误
+	EnableMemory  bool // 日志文件保存在内存中，降低硬盘IO
 }
 
 func New(filename string, option ...*Options) *logrus.Logger {
@@ -45,7 +46,7 @@ func New(filename string, option ...*Options) *logrus.Logger {
 	}
 
 	var filenamepath string
-	if runtime.GOOS == "linux" {
+	if runtime.GOOS == "linux" && options.EnableMemory {
 		filenamepath = filepath.Join("/dev/shm/", filename)
 	} else {
 		filenamepath = filepath.Join("./", filename)
@@ -74,7 +75,7 @@ func New(filename string, option ...*Options) *logrus.Logger {
 	}
 
 	// 在当前目录创建链接
-	if runtime.GOOS == "linux" {
+	if runtime.GOOS == "linux" && options.EnableMemory {
 		os.Symlink(filenamepath, filename)
 	}
 
