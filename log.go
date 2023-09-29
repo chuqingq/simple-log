@@ -19,10 +19,11 @@ type Options struct {
 	EnableMemory  bool // 日志文件保存在内存中，降低硬盘IO
 }
 
-func New(filename string, option ...*Options) *logrus.Logger {
-	if filename == "" {
-		filename = "test.log"
+func New(name string, option ...*Options) *logrus.Logger {
+	if name == "" {
+		name = "unknown"
 	}
+	filename := name + ".log"
 
 	options := &Options{}
 	if len(option) > 0 {
@@ -30,7 +31,7 @@ func New(filename string, option ...*Options) *logrus.Logger {
 	}
 
 	// options
-	maxsize := 1
+	maxsize := 10
 	if options.MaxSizeInMB > 1 {
 		maxsize = options.MaxSizeInMB
 	}
@@ -58,6 +59,8 @@ func New(filename string, option ...*Options) *logrus.Logger {
 		MaxSize:    maxsize,      // megabytes
 		MaxBackups: maxbackups,   // reserve 1 backup
 		// MaxAge:     28, //days
+		Compress:  true,
+		LocalTime: true,
 	}
 
 	logger := &logrus.Logger{
@@ -83,7 +86,9 @@ func New(filename string, option ...*Options) *logrus.Logger {
 }
 
 // SetLogLevel 设置日志级别
-// logger.SetLevel(logrus.DebugLevel)
+func SetLevel(logger *logrus.Logger, level logrus.Level) {
+	logger.SetLevel(level)
+}
 
 // AppendOutput 添加日志输出
 func AppendOutput(logger *logrus.Logger, output io.Writer) {
