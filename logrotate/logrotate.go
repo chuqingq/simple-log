@@ -9,15 +9,15 @@ import (
 	log "github.com/chuqingq/simple-log"
 )
 
-var file = flag.String("file", "", "log file name")
-var size = flag.Int("size", 20, "log file max size in MB")
-var backups = flag.Int("backups", 2, "log max backups")
-var disableStderr = flag.Bool("disableStderr", false, "disable stderr output")
-var EnableMemory = flag.Bool("enableMemory", false, "enable keep log file in memory (/dev/shm/)")
+var name = flag.String("Name", "", "log name, without '.log' suffix")
+var size = flag.Int("MaxSizeInMB", 10, "log file max size in MB")
+var backups = flag.Int("MaxBackups", 1, "log max backups")
+var disableStderr = flag.Bool("DisableStderr", false, "disable stderr output")
+var EnableMemory = flag.Bool("EnableMemory", false, "enable keep log file in memory (/dev/shm/)")
 
 func main() {
 	flag.Parse()
-	if *file == "" {
+	if *name == "" {
 		flag.PrintDefaults()
 		return
 	}
@@ -30,7 +30,7 @@ func main() {
 	}
 	fmt.Printf("options: %#v\n", options)
 
-	logger := log.New(*file, options)
+	logger := log.New(*name, options)
 
 	io.Copy(logger.Out, os.Stdin)
 }
