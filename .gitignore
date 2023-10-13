@@ -21,3 +21,5 @@
 go.work
 tests/tests
 logrotate/logrotate
+logs/
+*.log
