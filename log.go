@@ -19,11 +19,11 @@ type Options struct {
 	EnableMemory  bool // 日志文件保存在内存中，降低硬盘IO
 }
 
-func New(name string, option ...*Options) *logrus.Logger {
-	if name == "" {
-		name = "unknown"
+func New(filename string, option ...*Options) *logrus.Logger {
+	if filename == "" {
+		filename = "./unknown.log"
 	}
-	filename := name + ".log"
+	basename := filepath.Base(filename)
 
 	options := &Options{}
 	if len(option) > 0 {
@@ -31,7 +31,7 @@ func New(name string, option ...*Options) *logrus.Logger {
 	}
 
 	// options
-	maxsize := 10
+	maxsize := 20
 	if options.MaxSizeInMB > 1 {
 		maxsize = options.MaxSizeInMB
 	}
@@ -46,16 +46,17 @@ func New(name string, option ...*Options) *logrus.Logger {
 		formatter = options.Formatter
 	}
 
-	var filenamepath string
+	var realfilename string
 	if runtime.GOOS == "linux" && options.EnableMemory {
-		filenamepath = filepath.Join("/dev/shm/", filename)
+		realfilename = filepath.Join("/dev/shm/", basename)
 	} else {
-		filenamepath = filepath.Join("./", filename)
+		// filenamepath = filepath.Join("./", filename)
+		realfilename = filename
 	}
 
 	// lumberjack logger作为logrus的输出
 	output := &lumberjack.Logger{
-		Filename:   filenamepath, // in memory
+		Filename:   realfilename, // in memory
 		MaxSize:    maxsize,      // megabytes
 		MaxBackups: maxbackups,   // reserve 1 backup
 		// MaxAge:     28, //days
@@ -79,7 +80,9 @@ func New(name string, option ...*Options) *logrus.Logger {
 
 	// 在当前目录创建链接
 	if runtime.GOOS == "linux" && options.EnableMemory {
-		os.Symlink(filenamepath, filename)
+		dir := filepath.Dir(filename)
+		os.MkdirAll(dir, 0755)
+		os.Symlink(realfilename, filename)
 	}
 
 	return logger

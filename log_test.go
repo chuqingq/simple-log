@@ -16,12 +16,14 @@ import (
 func clean() {
 	os.Remove("test.log")
 	os.Remove("/dev/shm/test.log")
+	os.RemoveAll("./logs")
 }
 
 func TestLogLevel(t *testing.T) {
 	defer clean()
 
 	logger := New("test.log")
+	logger.Formatter = &logrus.JSONFormatter{}
 	go func() {
 		time.Sleep(time.Second * 5)
 		logger.SetLevel(logrus.ErrorLevel)
@@ -34,6 +36,40 @@ func TestLogLevel(t *testing.T) {
 
 		time.Sleep(time.Second)
 	}
+}
+
+func TestLogFileDir(t *testing.T) {
+	const filename = "./logs/test.log"
+	defer clean()
+
+	logger := New(filename)
+	logger.Formatter = &logrus.JSONFormatter{}
+	logger.Errorf("this is error log")
+	logger.Writer().Close()
+
+	// 验证有文件
+	f, err := os.Open(filename)
+	assert.Nil(t, err)
+	f.Close()
+}
+
+func TestDirAndMemory(t *testing.T) {
+	const filename = "./logs/test.log"
+	defer clean()
+
+	options := &Options{
+		EnableMemory: true,
+	}
+
+	logger := New(filename, options)
+	logger.Formatter = &logrus.JSONFormatter{}
+	logger.Errorf("this is error log")
+	logger.Writer().Close()
+
+	// 验证有文件
+	f, err := os.Open("/dev/shm/test.log")
+	assert.Nil(t, err)
+	f.Close()
 }
 
 func getCurrentPath() string {
