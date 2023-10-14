@@ -15,7 +15,7 @@ import (
 
 func clean() {
 	os.Remove("test.log")
-	os.Remove("/dev/shm/test.log")
+	os.RemoveAll("/dev/shm/logs/")
 	os.RemoveAll("./logs")
 }
 
@@ -67,7 +67,7 @@ func TestDirAndMemory(t *testing.T) {
 	logger.Writer().Close()
 
 	// 验证有文件
-	f, err := os.Open("/dev/shm/test.log")
+	f, err := os.Open(filepath.Join(MemoryDir, "test.log"))
 	assert.Nil(t, err)
 	f.Close()
 }

@@ -19,6 +19,8 @@ type Options struct {
 	EnableMemory  bool // 日志文件保存在内存中，降低硬盘IO
 }
 
+const MemoryDir = "/dev/shm/logs"
+
 func New(filename string, option ...*Options) *logrus.Logger {
 	if filename == "" {
 		filename = "./unknown.log"
@@ -48,7 +50,8 @@ func New(filename string, option ...*Options) *logrus.Logger {
 
 	var realfilename string
 	if runtime.GOOS == "linux" && options.EnableMemory {
-		realfilename = filepath.Join("/dev/shm/", basename)
+		os.MkdirAll(MemoryDir, 0755)
+		realfilename = filepath.Join(MemoryDir, basename)
 	} else {
 		// filenamepath = filepath.Join("./", filename)
 		realfilename = filename
