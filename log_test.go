@@ -67,7 +67,7 @@ func TestDirAndMemory(t *testing.T) {
 	logger.Writer().Close()
 
 	// 验证有文件
-	f, err := os.Open(filepath.Join(MemoryDir, "test.log"))
+	f, err := os.Open(filepath.Join(MEMORY_LOGS_DIR, "test.log"))
 	assert.Nil(t, err)
 	f.Close()
 }
