@@ -98,5 +98,5 @@ func SetLevel(logger *logrus.Logger, level logrus.Level) {
 
 // AppendOutput 添加日志输出
 func AppendOutput(logger *logrus.Logger, output io.Writer) {
-	logger.SetOutput(&logOutput{cur: logger.Out, next: output})
+	logger.SetOutput(io.MultiWriter(logger.Out, output))
 }
